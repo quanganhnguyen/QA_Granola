@@ -1,0 +1,137 @@
+{
+  "name": "qa-nola-desktop",
+  "version": "0.1.0",
+  "description": "Local-first meeting transcription and notes app",
+  "main": "dist/electron/main.js",
+  "homepage": "./",
+  "author": "QA Nola",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && npm run build:electron && cross-env NODE_ENV=development electron .",
+    "build": "npm run build:vite && npm run build:electron",
+    "build:vite": "vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "dist": "npm run build && electron-builder",
+    "dist:mac": "npm run build && npm run build:whisper && electron-builder --mac",
+    "dist:win": "npm run build && electron-builder --win",
+    "test": "jest --coverage --coverageThreshold='{\"global\":{\"lines\":90,\"branches\":85}}'",
+    "test:unit": "jest --testPathPattern=tests/unit --coverage",
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "test:e2e": "playwright test",
+    "test:watch": "jest --watch",
+    "lint": "eslint src electron --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "quality-gate": "npm run lint && npm run typecheck && npm run test",
+    "test:quality": "jest --testPathPattern='QualityContract|OfflineEvalHarness|QualityTelemetry' --verbose",
+    "eval:quality": "npm run test:quality -- --reporters=default",
+    "download-model": "bash scripts/download-whisper-model.sh",
+    "build:whisper": "cd node_modules/whisper-node/lib/whisper.cpp && make",
+    "rebuild": "electron-rebuild -f -w better-sqlite3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "better-sqlite3": "^11.9.1",
+    "electron-store": "^10.0.1",
+    "electron-updater": "^6.3.9",
+    "uuid": "^11.1.0",
+    "whisper-node": "^1.1.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^28.3.3",
+    "electron-builder": "^26.8.1",
+    "electron-rebuild": "^3.2.9",
+    "eslint": "^9.22.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "to-ico": "^1.1.5",
+    "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.qa.nola",
+    "productName": "QA Nola",
+    "publish": {
+      "provider": "generic",
+      "url": "https://your-update-server.com/releases"
+    },
+    "asarUnpack": [
+      "**/node_modules/whisper-node/**",
+      "dist/renderer/pcm-capture-worklet.js",
+      "scripts/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "models/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "assets/**/*",
+      "scripts/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "models/",
+        "to": "models/",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.icns"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
