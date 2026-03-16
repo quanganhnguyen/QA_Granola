@@ -38,6 +38,7 @@ declare global {
       transcription: {
         setProfile: (profile: QualityProfile) => Promise<QualityProfile>;
         getProfile: () => Promise<QualityProfile>;
+        getAvailableProfiles: () => Promise<QualityProfile[]>;
       };
     };
   }
@@ -58,6 +59,7 @@ export interface QaNolaState {
   summaryVisible: boolean;
   captureSystemAudio: boolean;
   qualityProfile: QualityProfile;
+  availableQualityProfiles: QualityProfile[];
 }
 
 export interface QaNolaActions {
@@ -92,14 +94,18 @@ export function useQaNola(): QaNolaState & QaNolaActions {
   const [summaryVisible, setSummaryVisible] = useState(true);
   const [captureSystemAudio, setCaptureSystemAudio] = useState(false);
   const [qualityProfile, setQualityProfileState] = useState<QualityProfile>(DEFAULT_PROFILE);
+  const [availableQualityProfiles, setAvailableQualityProfiles] = useState<QualityProfile[]>(['fast']);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.qaNola) return;
     loadSessions();
-    // Sync quality profile from main process
+    // Sync quality profile and available profiles from main process
     window.qaNola.transcription?.getProfile().then((p) => {
       if (p) setQualityProfileState(p);
+    }).catch(() => {});
+    window.qaNola.transcription?.getAvailableProfiles().then((list) => {
+      if (list?.length) setAvailableQualityProfiles(list);
     }).catch(() => {});
     const unsub = window.qaNola.transcript.onSegment((segment) => {
       setSegments(prev => [...prev, segment]);
@@ -305,6 +311,7 @@ export function useQaNola(): QaNolaState & QaNolaActions {
     summaryVisible,
     captureSystemAudio,
     qualityProfile,
+    availableQualityProfiles,
     startRecording,
     stopRecording,
     newSession,

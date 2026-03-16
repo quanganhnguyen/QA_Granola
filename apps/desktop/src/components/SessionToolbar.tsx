@@ -13,6 +13,7 @@ interface Props {
   captureSystemAudio: boolean;
   systemAudioError: string | null;
   qualityProfile: QualityProfile;
+  availableQualityProfiles: QualityProfile[];
   onStartRecording: () => void;
   onStopRecording: () => void;
   onToggleNotes: () => void;
@@ -27,6 +28,12 @@ const PROFILE_LABELS: Record<QualityProfile, string> = {
   fast: 'Fast',
   balanced: 'Balanced',
   max: 'Max Quality',
+};
+
+const PROFILE_HINTS: Record<QualityProfile, string> = {
+  fast: 'base.en model (~142 MB)',
+  balanced: 'small.en model (~466 MB)',
+  max: 'medium.en model (~1.5 GB)',
 };
 
 export function SessionToolbar({
@@ -48,6 +55,7 @@ export function SessionToolbar({
   onRunMerge,
   onIncludeSystemAudio,
   onSetQualityProfile,
+  availableQualityProfiles,
 }: Props) {
   const canMerge = session && !isRecording && !isMerging;
 
@@ -105,12 +113,21 @@ export function SessionToolbar({
         className="quality-profile-select"
         value={qualityProfile}
         onChange={(e) => onSetQualityProfile(e.target.value as QualityProfile)}
-        title="Transcription quality profile"
+        title={
+          availableQualityProfiles.length < 3
+            ? `Transcription quality. Only installed models are selectable. Balanced needs small.en, Max needs medium.en. Run download script for more.`
+            : 'Transcription quality profile'
+        }
         disabled={isRecording}
       >
-        {(Object.keys(PROFILE_LABELS) as QualityProfile[]).map((p) => (
-          <option key={p} value={p}>{PROFILE_LABELS[p]}</option>
-        ))}
+        {(Object.keys(PROFILE_LABELS) as QualityProfile[]).map((p) => {
+          const available = availableQualityProfiles.includes(p);
+          return (
+            <option key={p} value={p} disabled={!available} title={available ? undefined : `Not installed (${PROFILE_HINTS[p]})`}>
+              {PROFILE_LABELS[p]}{available ? '' : ' (not installed)'}
+            </option>
+          );
+        })}
       </select>
 
       <div className="toolbar-divider" />

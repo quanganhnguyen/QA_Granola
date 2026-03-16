@@ -135,4 +135,8 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
   ipcMain.handle('transcription:getProfile', () => {
     return transcriptionRouter.getQualityProfile();
   });
+
+  ipcMain.handle('transcription:getAvailableProfiles', () => {
+    return transcriptionRouter.getAvailableProfiles();
+  });
 }

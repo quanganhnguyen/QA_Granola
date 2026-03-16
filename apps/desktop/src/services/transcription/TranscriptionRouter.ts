@@ -33,6 +33,11 @@ export class TranscriptionRouter {
     return this.qualityProfile;
   }
 
+  /** Profiles whose Whisper model is installed and can be selected. */
+  getAvailableProfiles(): QualityProfile[] {
+    return (['fast', 'balanced', 'max'] as const).filter((p) => this.modelRegistry.isAvailable(p));
+  }
+
   getProfileConfig() {
     return PROFILE_CONFIGS[this.qualityProfile];
   }

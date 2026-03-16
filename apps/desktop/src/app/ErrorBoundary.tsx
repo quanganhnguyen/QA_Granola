@@ -22,7 +22,7 @@ export class ErrorBoundary extends React.Component<
   render(): React.ReactNode {
     if (this.state.hasError && this.state.error) {
       return (
-        <div className="app" style={{ padding: 24, fontFamily: 'system-ui', maxWidth: 560 }}>
+        <div className="app" style={{ padding: 24, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 560 }}>
           <h2>Something went wrong</h2>
           <p style={{ color: '#666', marginTop: 8 }}>{this.state.error.message}</p>
           <p style={{ fontSize: 12, color: '#999', marginTop: 16 }}>

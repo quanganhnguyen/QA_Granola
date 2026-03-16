@@ -87,6 +87,7 @@ export default function App() {
             captureSystemAudio={state.captureSystemAudio}
             systemAudioError={systemAudioError}
             qualityProfile={state.qualityProfile}
+            availableQualityProfiles={state.availableQualityProfiles}
             onStartRecording={state.startRecording}
             onStopRecording={state.stopRecording}
             onToggleNotes={state.toggleNotes}

@@ -26,8 +26,15 @@
     "quality-gate": "npm run lint && npm run typecheck && npm run test",
     "test:quality": "jest --testPathPattern='QualityContract|OfflineEvalHarness|QualityTelemetry' --verbose",
     "eval:quality": "npm run test:quality -- --reporters=default",
-    "download-model": "bash scripts/download-whisper-model.sh",
+    "download-model": "node scripts/download-whisper-model.js",
+    "download-model:fast": "node scripts/download-whisper-model.js fast",
+    "download-model:balanced": "node scripts/download-whisper-model.js balanced",
+    "download-model:max": "node scripts/download-whisper-model.js max",
+    "download-model:all": "node scripts/download-whisper-model.js",
     "build:whisper": "cd node_modules/whisper-node/lib/whisper.cpp && make",
+    "dist:full": "npm run download-model && npm run dist",
+    "dist:mac:full": "npm run download-model && npm run dist:mac",
+    "dist:win:full": "npm run download-model && npm run dist:win",
     "rebuild": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {

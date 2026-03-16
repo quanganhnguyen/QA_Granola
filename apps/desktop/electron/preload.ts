@@ -52,6 +52,8 @@ contextBridge.exposeInMainWorld('qaNola', {
       ipcRenderer.invoke('transcription:setProfile', profile),
     getProfile: () =>
       ipcRenderer.invoke('transcription:getProfile'),
+    getAvailableProfiles: () =>
+      ipcRenderer.invoke('transcription:getAvailableProfiles') as Promise<('fast' | 'balanced' | 'max')[]>,
   },
   window: {
     minimize: () => ipcRenderer.send('window-minimize'),
